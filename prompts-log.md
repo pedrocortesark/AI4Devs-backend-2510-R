@@ -209,4 +209,43 @@ Antes de codificar:
 Confírmame que has integrado estas directrices de calidad en el plan.
 **Resumen de la Respuesta/Acción:**
 Actualización de `systemPatterns.md` con guía detallada de Coding Standards (SRP, DRY, Separation of Concerns). Inclusión de fase de refactorización en `progress.md`. Implementación de endpoints siguiendo estos estándares en `candidateService.ts`.
+
+---
+
+## 005 - Integración Frontend: Servicios y Tipado
+**Fecha:** 2026-01-05 11:06
+**Prompt Original:**
+# Ejecución: Integración Frontend (Expert Engineer)
+
+Hemos completado el backend. Ahora asume el rol de un **Senior Frontend Engineer**.
+Tu objetivo es conectar la nueva lógica de negocio a la interfaz de usuario, garantizando que el código sea limpio, mantenible y respete la arquitectura existente.
+
+Naturalmente, debes seguir el protocolo que encuentras en `AGENTS.md` para mantener actualizado el memory bank y el archivo `prompts-log.md`
+
+## 1. Actualización del Estado (Memory Bank)
+Antes de tocar el código:
+1.  **`memory-bank/progress.md`**: Marca la fase de Backend (Rutas) como **[x] Completada**.
+2.  **`memory-bank/activeContext.md`**:
+    * Cambia el foco a: "Integración Frontend: Servicios y Tipado".
+    * Objetivo inmediato: Reflejar los nuevos datos en la UI tipo Kanban.
+
+## 2. Análisis y Estrategia (SOLID & DRY)
+Analiza la estructura actual del frontend.
+ Identifica los archivos exactos que necesitan modificaciones. **NO crees archivos nuevos si puedes extender lógicamente los existentes.**
+
+Debes proponer cambios para:
+1.  **Interfaces/Tipos:** Actualizar la definición de `Candidate` (o equivalente) para incluir `current_interview_step` y `average_score`.
+2.  **Capa de Servicio (API):** Añadir los métodos para consumir:
+    * `GET /positions/:id/candidates`
+    * `PUT /candidates/:id/stage`
+    * *Constraint DRY:* Reutiliza el cliente HTTP existente (axios, fetch wrapper, etc.). No escribas llamadas `fetch` crudas si ya hay un patrón establecido.
+3.  **Componentes UI:** Identifica qué componente renderiza el tablero o la lista de candidatos y explica cómo inyectarás los nuevos datos.
+
+## 3. Instrucciones de Entrega
+1.  Enumera los archivos existentes que vas a modificar.
+2.  Explica brevemente la estrategia para aplicar **SOLID** en el frontend (ej: separar la lógica de llamada a la API de la lógica de renderizado del componente).
+3.  **Genera el código propuesto** para los tipos y la capa de servicio (API) primero.
+4.  **DETENTE**. Espera mi aprobación antes de pasar a modificar los componentes visuales
+**Resumen de la Respuesta/Acción:**
+Actualización del Memory Bank. Análisis de arquitectura frontend. Propuesta de código para interfaces (Candidate) y servicios (API) respetando patrones existentes.
 ---

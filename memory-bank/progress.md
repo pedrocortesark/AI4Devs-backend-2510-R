@@ -72,7 +72,7 @@
 
 ## Funcionalidades Pendientes (Roadmap)
 
-### Sprint Kanban Backend (EN CURSO - 2026-01-05)
+### Sprint Kanban Backend (✅ COMPLETADO - 2026-01-05)
 **Objetivo:** Implementar endpoints para funcionalidad Kanban de seguimiento de candidatos.
 
 **⚠️ DIRECTRIZ DE SIMPLICIDAD:** Usar SOLO archivos existentes, NO crear nuevos módulos.
@@ -81,7 +81,7 @@
 - [x] Análisis del schema Prisma (relaciones Application-Candidate-Interview)
 - [x] Diseño de query para cálculo de score promedio
 - [x] **Decisión arquitectónica:** Extender `candidateService.ts` y `candidateRoutes.ts` existentes
-- [ ] Validación de reglas de negocio (¿puede un candidato retroceder de fase?)
+- [x] Validación de reglas de negocio (¿puede un candidato retroceder de fase?)
 
 #### Endpoint 1: GET /positions/:id/candidates (2.5 horas)
 **Archivos a modificar:**
