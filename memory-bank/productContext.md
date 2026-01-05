@@ -101,7 +101,7 @@ El sistema LTI nace como una solución para empresas que necesitan **profesional
    - Historial de entrevistas realizadas
    - Notas acumuladas
 
-**Estado Actual:** 🚧 Parcial (GET candidato existe, sin vista de Applications)
+**Estado Actual:** ✅ Backend completo para Vista Kanban (Endpoints listos). Frontend pendiente.
 
 ## Flujo de Datos Crítico
 
@@ -110,12 +110,13 @@ Candidate (creación manual o importación)
     ↓
 Application (vincula Candidate + Position)
     ↓
-InterviewStep (fase actual dentro del InterviewFlow de la Position)
+InterviewStep (fase actual dentro del InterviewFlow de la Position) -> ✅ MOVILE via Endpoint Kanban
     ↓
 Interview (evento concreto: fecha, interviewer, resultado)
     ↓
 Decision: ¿Avanzar al siguiente Step o Rechazar?
 ```
+
 
 ## Dependencias Externas (Futuras)
 - **Email Service**: Para notificaciones (SendGrid, AWS SES)

@@ -149,3 +149,64 @@ Analiza el esquema de base de datos actual y el código existente. Luego, **ACTU
 **Resumen de la Respuesta/Acción:**
 Análisis del schema Prisma, actualización del Memory Bank con planificación detallada de endpoints Kanban (GET /positions/:id/candidates con cálculo de score promedio, PUT /candidates/:id/stage), y presentación del roadmap granular para aprobación.
 ---
+
+## 003 - Ajuste de Arquitectura: Simplificación
+**Fecha:** 2026-01-05 09:42
+**Prompt Original:**
+# Ajuste de Arquitectura: Simplificación y Reutilización
+
+He revisado tu propuesta inicial de crear nuevos archivos (`applicationService.ts`, `positionRoutes.ts`), pero vamos a **rechazar esa aproximación** en favor de una solución más simple y contenida.
+
+## Directriz de Simplicidad
+**Regla de Oro:** En caso de duda, SIEMPRE prioriza extender los archivos existentes antes que crear nuevos módulos. Queremos completar el ejercicio con la mínima fricción estructural posible.
+
+## Instrucciones Técnicas Específicas
+Reestructura tu plan utilizando EXCLUSIVAMENTE los siguientes archivos ya existentes en el repositorio:
+
+1.  **`src/services/candidateService.ts`**
+    * Aquí debes implementar la lógica para buscar candidatos por `positionId` (incluyendo el cálculo del score medio).
+    * Aquí debes implementar la lógica para actualizar el `stage` del candidato.
+    * **NO** crees `applicationService.ts`.
+
+2.  **`src/routes/candidateRoutes.ts`**
+    * Aquí definirás el endpoint `GET /positions/:id/candidates`. Aunque la URL empiece por "positions", al devolver candidatos, lo gestionaremos en este router.
+    * Aquí definirás el endpoint `PUT /candidates/:id/stage`.
+    * **NO** crees `positionRoutes.ts`.
+
+## Acción Requerida
+1.  **Corrige `memory-bank/systemPatterns.md`**: Actualiza la arquitectura para reflejar que modificaremos `candidateService` y `candidateRoutes` en lugar de expandir el sistema de archivos.
+2.  **Corrige `memory-bank/progress.md`**: Ajusta los pasos del plan para que apunten a la edición de estos archivos específicos.
+3.  **Confirma**: Muéstrame el plan actualizado confirmando que has entendido que **no se crearán archivos nuevos**.
+
+**Resumen de la Respuesta/Acción:**
+Reestructuración del plan para usar exclusivamente archivos existentes. Actualización de `progress.md` y `systemPatterns.md` para reflejar la extensión de servicios en lugar de creación de nuevos módulos.
+
+---
+
+## 004 - Directriz de Calidad: SOLID y DRY
+**Fecha:** 2026-01-05 10:06
+**Prompt Original:**
+# Directriz de Calidad: Principios SOLID y DRY en Arquitectura Existente
+
+Aunque hemos decidido centralizar la lógica en `candidateService.ts` y `candidateRoutes.ts`, esto **NO** es excusa para escribir "Spaghetti Code" o funciones monolíticas.
+
+## 1. Estándar de Referencia (Lectura Obligatoria)
+Para alinear el estilo de código con las expectativas del equipo, revisa y aplica los conceptos detallados en este documento de referencia:
+> [Buenas Prácticas Aplicadas con AI (LIDR)](https://training.lidr.co/posts/ai4devs-202510-rookies-%F0%9F%93%84-buenas-practicas-aplicadas-con-ai-caso-lti-%F0%9F%94%B4-33-min)
+
+## 2. Requisitos Técnicos de Implementación
+Al modificar los archivos existentes, debes aplicar estrictamente:
+
+* **Principio de Responsabilidad Única (SRP):** Aunque el código viva en `candidateService.ts`, cada método debe hacer una sola cosa. Si el cálculo del promedio de scores es complejo, extráelo a una función privada o un helper dentro del mismo archivo, no lo mezcles con la lógica de base de datos.
+* **DRY (Don't Repeat Yourself):** Si ya existe lógica de consulta o mapeo de candidatos, reutilízala. No dupliques consultas SQL si puedes parametrizar una existente.
+* **Legibilidad:** El código debe ser auto-explicativo. Nombres de variables semánticos y tipado estricto en TypeScript.
+
+## 3. Actualización del Memory Bank
+Antes de codificar:
+1.  Actualiza **`memory-bank/systemPatterns.md`**: Añade una sección de "Coding Standards" citando explícitamente el cumplimiento de SOLID/DRY y el documento proporcionado.
+2.  Actualiza **`memory-bank/progress.md`**: Asegúrate de que en la fase de implementación haya un paso de "Refactorización/Limpieza" para garantizar que no estamos introduciendo deuda técnica al añadir estas nuevas funciones.
+
+Confírmame que has integrado estas directrices de calidad en el plan.
+**Resumen de la Respuesta/Acción:**
+Actualización de `systemPatterns.md` con guía detallada de Coding Standards (SRP, DRY, Separation of Concerns). Inclusión de fase de refactorización en `progress.md`. Implementación de endpoints siguiendo estos estándares en `candidateService.ts`.
+---

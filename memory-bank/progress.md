@@ -22,7 +22,7 @@
 - [x] Lectura del protocolo AGENTS.md
 - [x] Creación de memory-bank/ (6 archivos core)
 - [x] Registro en prompts-log.md
-- [ ] Creación de .agent/rules/00-memory-bank.md (siguiente)
+- [x] Creación de .agent/rules/00-memory-bank.md (siguiente)
 
 ## Deuda Técnica
 
@@ -89,25 +89,25 @@
 - ✏️ `backend/src/routes/candidateRoutes.ts`
 
 **Paso 1.1:** Añadir funciones en `candidateService.ts` (60 min)
-- Función: `getCandidatesByPosition(prisma, positionId)`
+- [x] Función: `getCandidatesByPosition(prisma, positionId)`
   - Query Prisma con includes: `candidate`, `interviewStep`, `interviews`
   - Mapeo a DTO con `fullName`, `currentStage`, `averageScore`
-- Función auxiliar: `calculateAverageScore(interviews[])`
+- [x] Función auxiliar: `calculateAverageScore(interviews[])`
   - Filtrar `score !== null`
   - Calcular promedio o retornar `null`
 
 **Paso 1.2:** Añadir ruta en `candidateRoutes.ts` (45 min)
-- Endpoint: `GET /positions/:id/candidates`
-- Validación: `positionId` debe ser número entero positivo
-- Manejo de errores: 400 (invalid ID), 500 (server error)
+- [x] Endpoint: `GET /candidates/positions/:id/candidates` (Ruta anidada por estructura existente)
+- [x] Validación: `positionId` debe ser número entero positivo
+- [x] Manejo de errores: 400 (invalid ID), 500 (server error)
 
 **Paso 1.3:** Testing manual (30 min)
 ```bash
 # Verificar datos en Prisma Studio
 npx prisma studio
 
-# Test del endpoint
-curl http://localhost:3010/positions/1/candidates
+# Test del endpoint (Nota: prefijo /candidates heredado de index.ts)
+curl http://localhost:3010/candidates/positions/1/candidates
 ```
 
 #### Endpoint 2: PUT /candidates/:id/stage (2 horas)
@@ -116,16 +116,16 @@ curl http://localhost:3010/positions/1/candidates
 - ✏️ `backend/src/routes/candidateRoutes.ts`
 
 **Paso 2.1:** Añadir función en `candidateService.ts` (75 min)
-- Función: `updateCandidateStage(prisma, candidateId, positionId, newStepId)`
+- [x] Función: `updateCandidateStage(prisma, candidateId, positionId, newStepId)`
   - Buscar Application por candidateId + positionId
   - Validar que newStepId pertenece al InterviewFlow de la Position
   - Actualizar `currentInterviewStep` en Application
   - Manejar errores: Application not found, Invalid stepId
 
 **Paso 2.2:** Añadir ruta en `candidateRoutes.ts` (30 min)
-- Endpoint: `PUT /candidates/:id/stage`
-- Body: `{ "positionId": number, "newInterviewStepId": number }`
-- Manejo de errores: 400, 404, 500
+- [x] Endpoint: `PUT /candidates/:id/stage`
+- [x] Body: `{ "positionId": number, "newInterviewStepId": number }`
+- [x] Manejo de errores: 400, 404, 500
 
 **Paso 2.3:** Testing manual (15 min)
 ```bash
@@ -138,30 +138,19 @@ curl -X PUT http://localhost:3010/candidates/1/stage \
 **⚠️ CRÍTICO:** No introducir deuda técnica. Aplicar principios SOLID/DRY.
 
 **Paso 3.1:** Code Review Interno (20 min)
-- [ ] Verificar SRP: Cada función tiene responsabilidad única
-- [ ] Verificar DRY: No hay código duplicado
-- [ ] Verificar tipado: No hay uso de `any`, tipos explícitos
-- [ ] Verificar nombres: Variables y funciones son auto-explicativas
+- [x] Verificar SRP: Cada función tiene responsabilidad única (Aplicado en diseño)
+- [x] Verificar DRY: No hay código duplicado (Helpers reutilizados)
+- [x] Verificar tipado: No hay uso de `any`, tipos explícitos (`CandidateKanbanDTO`)
+- [x] Verificar nombres: Variables y funciones son auto-explicativas
 
 **Paso 3.2:** Extracción de Helpers (30 min)
-- [ ] Si `calculateAverageScore()` es complejo → extraer sub-funciones
-- [ ] Si hay lógica duplicada de mapeo → centralizar en helper
-- [ ] Si hay validaciones repetidas → extraer a funciones privadas
+- [x] `calculateAverageScore()` extraído
+- [x] `buildFullName()` extraído
+- [x] `validateInterviewStepBelongsToFlow()` extraído
 
 **Paso 3.3:** Documentación JSDoc (10 min)
-```typescript
-/**
- * Obtiene candidatos aplicados a una posición con su score promedio.
- * @param prisma - Cliente de Prisma para queries
- * @param positionId - ID de la posición
- * @returns Array de candidatos con datos del Kanban
- * @throws Error si positionId es inválido
- */
-export const getCandidatesByPosition = async (
-  prisma: PrismaClient,
-  positionId: number
-): Promise<CandidateKanbanDTO[]> => { /* ... */ };
-```
+- [x] Documentación añadida a todas las funciones exportadas e internas
+
 
 - [ ] Test unitario: `calculateAverageScore()` con Jest
 - [ ] Test de integración: GET endpoint

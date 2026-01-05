@@ -24,20 +24,17 @@ Se está diseñando la implementación de dos endpoints para gestionar candidato
 ## Lista de Tareas Inmediatas (Next Steps)
 
 ### Alta Prioridad
-1. [/] **Implementar Endpoints Kanban** (EN PLANIFICACIÓN)
-   - [x] Registrar prompt en prompts-log.md (ID 002)
-   - [x] Analizar schema Prisma (Application-Candidate-Interview)
-   - [x] Crear roadmap granular en progress.md
-   - [x] Actualizar activeContext.md con nuevo foco
-   - [x] **REVISIÓN ARQUITECTÓNICA:** Ajustar plan para usar solo archivos existentes
-   - [x] Corregir progress.md: NO crear ApplicationService/positionRoutes
-   - [x] Corregir systemPatterns.md: Extender candidateService.ts
-   - [ ] **ESPERANDO APROBACIÓN DEL PLAN CORREGIDO**
-   - [ ] Añadir funciones en candidateService.ts
-   - [ ] Añadir rutas en candidateRoutes.ts
-   - [ ] Testing manual
+### Alta Prioridad
+1. [x] **Implementar Endpoints Kanban** (COMPLETADO)
+   - [x] Implementación de Endpoints y Servicios (candidateService.ts)
+   - [x] Implementación de Rutas (candidateRoutes.ts)
+   - [x] Refactorización y Docs (JSDoc, SRP, Helpers)
+   - [x] Testing Manual con URLs correctas (`/candidates/positions/:id/candidates`)
+   - [x] Walkthrough generado
 
 2. [ ] **Completar inicialización de Memory Bank**
+
+
 
    - [ ] Crear archivo `progress.md`
    - [ ] Crear archivo `.agent/rules/00-memory-bank.md`
