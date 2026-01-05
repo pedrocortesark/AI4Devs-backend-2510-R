@@ -85,8 +85,8 @@
 
 #### Endpoint 1: GET /positions/:id/candidates (2.5 horas)
 **Archivos a modificar:**
-- ✏️ `backend/src/application/services/candidateService.ts`
-- ✏️ `backend/src/routes/candidateRoutes.ts`
+- ✅ `backend/src/application/services/candidateService.ts`
+- ✅ `backend/src/routes/candidateRoutes.ts`
 
 **Paso 1.1:** Añadir funciones en `candidateService.ts` (60 min)
 - [x] Función: `getCandidatesByPosition(prisma, positionId)`
@@ -159,6 +159,45 @@ curl -X PUT http://localhost:3010/candidates/1/stage \
 **Estimación Total:** 6.5-8.5 horas  
 **Owner:** Asignar  
 **Dependencias:** Seed con Positions, Applications e Interviews
+
+---
+
+### Sprint Kanban Frontend (🚧 EN PROGRESO - 2026-01-05)
+**Objetivo:** Integrar endpoints backend en UI tipo Kanban para visualizar y mover candidatos.
+
+#### Fase 1: Capa de Datos (Tipos + Servicios) - ✅ COMPLETADO
+**Archivos verificados:**
+- [x] `frontend/src/types.ts` - `CandidateKanbanDTO` y `MoveCandidatePayload` ✅
+- [x] `frontend/src/services/candidateService.ts` - `getCandidatesByPosition()` y `updateCandidateStage()` ✅
+
+**Acciones:**
+- [x] Verificar que los tipos coinciden con el backend
+- [x] Confirmar que las funciones siguen principios SOLID/DRY
+
+#### Fase 2: Componente Kanban - ✅ COMPLETADO (2026-01-05)
+**Archivos modificados:**
+- [x] `frontend/src/components/RecruiterDashboard.tsx` → Convertido de .js a .tsx con vista Kanban completa
+- [x] `frontend/src/App.tsx` - Configurado routing con React Router
+
+**Decisiones de Implementación:**
+- ✅ Extendido RecruiterDashboard.js (no se creó archivo nuevo)
+- ✅ Botones simples de movimiento implementados
+- ✅ positionId hardcoded = 1 para testing inicial
+
+**Acciones:**
+- [x] Convertir RecruiterDashboard.js a TypeScript (.tsx)
+- [x] Añadir estado con useState para candidatos y loading/error
+- [x] Consumir `getCandidatesByPosition(1)` en `useEffect`
+- [x] Renderizar columnas dinámicas agrupando por `currentStage`
+- [x] Añadir botones "Mover a..." que llamen a `updateCandidateStage()`
+- [x] Implementar manejo de errores y mensajes de éxito (Alerts de Bootstrap)
+
+#### Fase 3: Testing & UX - 🚧 PENDIENTE (1 hora)
+- [ ] Validar flujo completo con datos reales del backend
+- [ ] Verificar que los botones de movimiento funcionan correctamente
+- [ ] Probar manejo de errores (backend caído, IDs inválidos)
+- [ ] (Opcional) Mejorar UX con toast notifications en lugar de Alerts
+- [ ] (Opcional) Añadir selector de posición en lugar de hardcoded
 
 ---
 

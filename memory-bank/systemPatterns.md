@@ -67,11 +67,12 @@
   - `fileUploadService.ts` - Manejo de uploads con Multer
 - `validator.ts` - Validaciones de entrada de datos
 
-**Próximas Adiciones (Kanban):**
-- `candidateService.ts` se extenderá con:
-  - `getCandidatesByPosition()` - Query de candidatos por posición
-  - `updateCandidateStage()` - Actualización de fase de candidato
-  - `calculateAverageScore()` - Cálculo de score promedio
+**Funcionalidades Implementadas (Kanban - 2026-01-05):**
+- ✅ `getCandidatesByPosition(positionId)` - Query con joins de Application → Candidate, InterviewStep, Interviews
+- ✅ `updateCandidateStage(candidateId, positionId, newStepId)` - Validación de pertenencia de step a flow
+- ✅ `calculateAverageScore(interviews)` - Helper puro para cálculo de promedio
+- ✅ `buildFullName(firstName, lastName)` - Helper de formateo
+- ✅ `validateInterviewStepBelongsToFlow(stepId, flowId)` - Validación de reglas de negocio
 
 **Regla:** Orquesta el Domain y coordina con Infrastructure (Prisma).
 
@@ -473,16 +474,29 @@ backend/
 ```
 frontend/
 ├── src/
-│   ├── App.tsx                [Router principal]
+│   ├── App.tsx                          [Router principal - React Router configurado]
 │   ├── components/
-│   │   ├── AddCandidate/      [Formulario de creación]
-│   │   └── CandidateItem/     [Card/List item de candidato]
+│   │   ├── RecruiterDashboard.tsx       [Vista Kanban con columnas por fase]
+│   │   ├── AddCandidateForm.js          [Formulario de creación de candidatos]
+│   │   └── FileUploader.js              [Componente de upload de CVs]
 │   ├── services/
-│   │   └── api.ts             [Axios/Fetch wrapper para backend]
-│   └── index.tsx              [Entry point React]
-├── public/                    [Assets estáticos]
-└── package.json               [Scripts: start, build, test]
+│   │   └── candidateService.ts          [API Client con axios - Kanban endpoints]
+│   ├── types.ts                         [TypeScript interfaces (DTOs)]
+│   └── index.tsx                        [Entry point React]
+├── public/                              [Assets estáticos]
+└── package.json                         [Scripts: start, build, test]
 ```
+
+**Patrones Frontend (SOLID aplicado):**
+- **Single Responsibility:** 
+  - `candidateService.ts` solo hace llamadas HTTP
+  - `RecruiterDashboard.tsx` separa lógica de negocio en funciones puras (`groupCandidatesByStage`)
+  - Componentes presentacionales puros (CandidateCard implícito en render)
+- **Dependency Inversion:** 
+  - Componentes dependen de interfaces TypeScript (`CandidateKanbanDTO`), no de implementaciones
+- **DRY:** 
+  - Cliente axios reutilizado en todo `candidateService.ts`
+  - Manejo de errores centralizado con try/catch consistente
 
 ## Reglas de Modificación
 
