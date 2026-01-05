@@ -68,6 +68,129 @@
 **DT-004:** Bootstrap 5 (componentes pre-built)  
 **DT-005:** Memory Bank multi-agente (2026-01-05)
 
+---
+
+## Funcionalidades Pendientes (Roadmap)
+
+### Sprint Kanban Backend (EN CURSO - 2026-01-05)
+**Objetivo:** Implementar endpoints para funcionalidad Kanban de seguimiento de candidatos.
+
+**⚠️ DIRECTRIZ DE SIMPLICIDAD:** Usar SOLO archivos existentes, NO crear nuevos módulos.
+
+#### Análisis y Diseño (1 hora)
+- [x] Análisis del schema Prisma (relaciones Application-Candidate-Interview)
+- [x] Diseño de query para cálculo de score promedio
+- [x] **Decisión arquitectónica:** Extender `candidateService.ts` y `candidateRoutes.ts` existentes
+- [ ] Validación de reglas de negocio (¿puede un candidato retroceder de fase?)
+
+#### Endpoint 1: GET /positions/:id/candidates (2.5 horas)
+**Archivos a modificar:**
+- ✏️ `backend/src/application/services/candidateService.ts`
+- ✏️ `backend/src/routes/candidateRoutes.ts`
+
+**Paso 1.1:** Añadir funciones en `candidateService.ts` (60 min)
+- Función: `getCandidatesByPosition(prisma, positionId)`
+  - Query Prisma con includes: `candidate`, `interviewStep`, `interviews`
+  - Mapeo a DTO con `fullName`, `currentStage`, `averageScore`
+- Función auxiliar: `calculateAverageScore(interviews[])`
+  - Filtrar `score !== null`
+  - Calcular promedio o retornar `null`
+
+**Paso 1.2:** Añadir ruta en `candidateRoutes.ts` (45 min)
+- Endpoint: `GET /positions/:id/candidates`
+- Validación: `positionId` debe ser número entero positivo
+- Manejo de errores: 400 (invalid ID), 500 (server error)
+
+**Paso 1.3:** Testing manual (30 min)
+```bash
+# Verificar datos en Prisma Studio
+npx prisma studio
+
+# Test del endpoint
+curl http://localhost:3010/positions/1/candidates
+```
+
+#### Endpoint 2: PUT /candidates/:id/stage (2 horas)
+**Archivos a modificar:**
+- ✏️ `backend/src/application/services/candidateService.ts`
+- ✏️ `backend/src/routes/candidateRoutes.ts`
+
+**Paso 2.1:** Añadir función en `candidateService.ts` (75 min)
+- Función: `updateCandidateStage(prisma, candidateId, positionId, newStepId)`
+  - Buscar Application por candidateId + positionId
+  - Validar que newStepId pertenece al InterviewFlow de la Position
+  - Actualizar `currentInterviewStep` en Application
+  - Manejar errores: Application not found, Invalid stepId
+
+**Paso 2.2:** Añadir ruta en `candidateRoutes.ts` (30 min)
+- Endpoint: `PUT /candidates/:id/stage`
+- Body: `{ "positionId": number, "newInterviewStepId": number }`
+- Manejo de errores: 400, 404, 500
+
+**Paso 2.3:** Testing manual (15 min)
+```bash
+curl -X PUT http://localhost:3010/candidates/1/stage \
+  -H "Content-Type: application/json" \
+  -d '{"positionId": 1, "newInterviewStepId": 3}'
+```
+
+#### Refactorización y Limpieza de Código (1 hora)
+**⚠️ CRÍTICO:** No introducir deuda técnica. Aplicar principios SOLID/DRY.
+
+**Paso 3.1:** Code Review Interno (20 min)
+- [ ] Verificar SRP: Cada función tiene responsabilidad única
+- [ ] Verificar DRY: No hay código duplicado
+- [ ] Verificar tipado: No hay uso de `any`, tipos explícitos
+- [ ] Verificar nombres: Variables y funciones son auto-explicativas
+
+**Paso 3.2:** Extracción de Helpers (30 min)
+- [ ] Si `calculateAverageScore()` es complejo → extraer sub-funciones
+- [ ] Si hay lógica duplicada de mapeo → centralizar en helper
+- [ ] Si hay validaciones repetidas → extraer a funciones privadas
+
+**Paso 3.3:** Documentación JSDoc (10 min)
+```typescript
+/**
+ * Obtiene candidatos aplicados a una posición con su score promedio.
+ * @param prisma - Cliente de Prisma para queries
+ * @param positionId - ID de la posición
+ * @returns Array de candidatos con datos del Kanban
+ * @throws Error si positionId es inválido
+ */
+export const getCandidatesByPosition = async (
+  prisma: PrismaClient,
+  positionId: number
+): Promise<CandidateKanbanDTO[]> => { /* ... */ };
+```
+
+- [ ] Test unitario: `calculateAverageScore()` con Jest
+- [ ] Test de integración: GET endpoint
+- [ ] Test de integración: PUT endpoint
+
+**Estimación Total:** 6.5-8.5 horas  
+**Owner:** Asignar  
+**Dependencias:** Seed con Positions, Applications e Interviews
+
+---
+
+### Sprint 1: Gestión de Posiciones (2 días)
+
+- [ ] Crear `PositionService.ts`
+- [ ] Implementar endpoints CRUD de Positions
+- [ ] Crear formulario React para añadir Position
+- [ ] Vincular Position con Company (requiere implementar Company primero)
+
+**Estimación:** 2 días  
+**Owner:** Asignar
+
+### Sprint 2: Flujo de Applications (3 días)
+
+**Estimación:** 8 horas total  
+**Owner:** Asignar  
+**Dependencias:** Requiere datos de prueba (seed) con Positions, Applications e Interviews
+
+---
+
 ## Métricas
 
 **Cobertura:** 4/12 entidades (33.3%)  

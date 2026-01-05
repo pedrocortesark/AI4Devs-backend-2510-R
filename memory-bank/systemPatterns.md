@@ -63,9 +63,15 @@
 
 **Contenido Actual:**
 - `services/`
-  - `CandidateService.ts` - Lógica de creación/actualización de candidatos
+  - `candidateService.ts` - Lógica de creación/actualización de candidatos
   - `fileUploadService.ts` - Manejo de uploads con Multer
 - `validator.ts` - Validaciones de entrada de datos
+
+**Próximas Adiciones (Kanban):**
+- `candidateService.ts` se extenderá con:
+  - `getCandidatesByPosition()` - Query de candidatos por posición
+  - `updateCandidateStage()` - Actualización de fase de candidato
+  - `calculateAverageScore()` - Cálculo de score promedio
 
 **Regla:** Orquesta el Domain y coordina con Infrastructure (Prisma).
 
@@ -215,7 +221,230 @@ app.use(errorHandler);             // Error handling
 // No es un controller ni un repositorio, sino orquestador
 ```
 
-## Mapeo de Carpetas Clave
+### 5. **Calculated Fields Pattern** (Endpoints Kanban - 2026-01-05)
+**Ubicación:** `backend/src/application/services/candidateService.ts`
+
+```typescript
+// candidateService.ts - Extensión para Kanban (NO crear ApplicationService)
+import { PrismaClient } from '@prisma/client';
+
+export const getCandidatesByPosition = async (
+  prisma: PrismaClient,
+  positionId: number
+) => {
+  const applications = await prisma.application.findMany({
+    where: { positionId },
+    include: {
+      candidate: true,
+      interviewStep: true,
+      interviews: { select: { score: true } }
+    }
+  });
+
+  return applications.map(app => ({
+    candidateId: app.candidate.id,
+    fullName: `${app.candidate.firstName} ${app.candidate.lastName}`,
+    currentStage: app.interviewStep.name,
+    averageScore: calculateAverageScore(app.interviews)
+  }));
+};
+
+const calculateAverageScore = (interviews: { score: number | null }[]) => {
+  const validScores = interviews
+    .map(i => i.score)
+    .filter((score): score is number => score !== null);
+  
+  if (validScores.length === 0) return null;
+  return validScores.reduce((sum, score) => sum + score, 0) / validScores.length;
+};
+```
+
+**Regla de Negocio:**
+- Si un candidato no tiene entrevistas registradas → `averageScore: null`
+- Si tiene entrevistas pero ninguna con score → `averageScore: null`
+- Solo se promedian entrevistas con `score !== null`
+
+**Directriz de Simplicidad:**
+- ✅ Extender archivo existente (`candidateService.ts`)
+- ❌ NO crear nuevo servicio (`ApplicationService.ts`)
+
+---
+
+## Coding Standards y Principios de Diseño
+
+### Principios SOLID Aplicados
+
+#### 1. **Single Responsibility Principle (SRP)**
+**Regla:** Cada función debe tener una única responsabilidad.
+
+**Ejemplo Correcto:**
+```typescript
+// candidateService.ts
+
+// ✅ Función con responsabilidad única: obtener datos
+export const getCandidatesByPosition = async (prisma, positionId) => {
+  const applications = await fetchApplicationsByPosition(prisma, positionId);
+  return mapApplicationsToCandidatesDTO(applications);
+};
+
+// ✅ Función con responsabilidad única: mapeo
+const mapApplicationsToCandidatesDTO = (applications) => {
+  return applications.map(app => ({
+    candidateId: app.candidate.id,
+    fullName: buildFullName(app.candidate),
+    currentStage: app.interviewStep.name,
+    averageScore: calculateAverageScore(app.interviews)
+  }));
+};
+
+// ✅ Función con responsabilidad única: cálculo
+const calculateAverageScore = (interviews) => {
+  const validScores = interviews
+    .map(i => i.score)
+    .filter((score): score is number => score !== null);
+  
+  return validScores.length === 0 
+    ? null 
+    : validScores.reduce((sum, score) => sum + score, 0) / validScores.length;
+};
+```
+
+**Ejemplo Incorrecto (❌ Violación de SRP):**
+```typescript
+// ❌ Función monolítica mezclando DB query, lógica de negocio y mapeo
+export const getCandidatesByPosition = async (prisma, positionId) => {
+  const apps = await prisma.application.findMany({...});
+  return apps.map(app => {
+    const scores = app.interviews.filter(i => i.score !== null).map(i => i.score);
+    const avg = scores.length ? scores.reduce((a,b) => a+b, 0) / scores.length : null;
+    return { 
+      candidateId: app.candidate.id, 
+      fullName: app.candidate.firstName + ' ' + app.candidate.lastName,
+      currentStage: app.interviewStep.name,
+      averageScore: avg 
+    };
+  });
+};
+```
+
+#### 2. **DRY (Don't Repeat Yourself)**
+**Regla:** Reutilizar lógica existente, no duplicar código.
+
+**Buena Práctica:**
+- Si ya existe `buildFullName()` en otro servicio → importar y reutilizar
+- Si ya existe helper para filtrar valores null → reutilizar
+- Centralizar lógica de manejo de errores en middleware
+
+#### 3. **Open/Closed Principle**
+**Aplicación:** Las validaciones de negocio deben ser extensibles sin modificar el core.
+
+```typescript
+// ✅ Extensible mediante configuración
+const validations = {
+  allowBackwardMovement: false,  // Configurable
+  requireScoreThreshold: null    // Futuro: requerir score mínimo
+};
+
+export const updateCandidateStage = async (prisma, candidateId, positionId, newStepId) => {
+  // Aplicar validaciones configurables
+  if (!validations.allowBackwardMovement) {
+    await validateForwardMovement(application, newStepId);
+  }
+  // ...
+};
+```
+
+#### 4. **Separation of Concerns**
+**Estructura del archivo `candidateService.ts`:**
+
+```typescript
+// === SECCIÓN 1: Queries a Base de Datos ===
+const fetchApplicationsByPosition = async (prisma, positionId) => { /* ... */ };
+const fetchApplicationForUpdate = async (prisma, candidateId, positionId) => { /* ... */ };
+
+// === SECCIÓN 2: Transformaciones y Mapeo ===
+const mapApplicationsToCandidatesDTO = (applications) => { /* ... */ };
+const buildFullName = (candidate) => `${candidate.firstName} ${candidate.lastName}`;
+
+// === SECCIÓN 3: Lógica de Negocio ===
+const calculateAverageScore = (interviews) => { /* ... */ };
+const validateInterviewStepBelongsToFlow = (interviewFlow, stepId) => { /* ... */ };
+
+// === SECCIÓN 4: Funciones Públicas (Exported) ===
+export const getCandidatesByPosition = async (prisma, positionId) => { /* ... */ };
+export const updateCandidateStage = async (prisma, candidateId, positionId, newStepId) => { /* ... */ };
+```
+
+### Estándares de TypeScript
+
+#### Tipado Estricto
+```typescript
+// ✅ Interfaces explícitas para DTOs
+interface CandidateKanbanDTO {
+  candidateId: number;
+  fullName: string;
+  currentStage: string;
+  averageScore: number | null;
+}
+
+// ✅ Tipos de retorno explícitos
+export const getCandidatesByPosition = async (
+  prisma: PrismaClient,
+  positionId: number
+): Promise<CandidateKanbanDTO[]> => {
+  // ...
+};
+
+// ❌ Evitar tipo 'any'
+const badExample = async (data: any) => { /* ... */ };  // NO HACER
+```
+
+#### Nombres Semánticos
+```typescript
+// ✅ Variables auto-explicativas
+const validScoresForAverage = interviews
+  .map(interview => interview.score)
+  .filter((score): score is number => score !== null);
+
+// ❌ Variables crípticas
+const vs = interviews.map(i => i.s).filter(s => s !== null);  // NO HACER
+```
+
+### Gestión de Errores
+
+**Patrón consistente:**
+```typescript
+export const updateCandidateStage = async (...) => {
+  // Validación de entrada
+  if (!positionId || !newInterviewStepId) {
+    throw new Error('Missing required parameters');
+  }
+
+  // Lógica de negocio
+  const application = await fetchApplicationForUpdate(...);
+  
+  if (!application) {
+    throw new Error('Application not found');  // Error específico para 404
+  }
+
+  if (!isValidStepForPosition(application, newStepId)) {
+    throw new Error('Invalid interviewStepId for this position');  // Error específico para 400
+  }
+
+  // Operación exitosa
+  return await prisma.application.update(...);
+};
+```
+
+### Referencias
+- **Documento de Buenas Prácticas:** [LIDR - AI4Devs Rookies](https://training.lidr.co/posts/ai4devs-202510-rookies-%F0%9F%93%84-buenas-practicas-aplicadas-con-ai-caso-lti-%F0%9F%94%B4-33-min)
+- **Principios SOLID:** [Clean Code by Robert C. Martin]
+- **TypeScript Best Practices:** [Official TypeScript Handbook]
+
+---
+
+## Reglas de Modificación
+
 
 ### Backend (`c:\Users\pedro.cortes\source\ai4devs\09-backend\backend\`)
 ```

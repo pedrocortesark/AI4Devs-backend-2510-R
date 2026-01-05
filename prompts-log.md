@@ -94,3 +94,58 @@ Después de completar una tarea:
 **Resumen de la Respuesta/Acción:**
 Inicialización del protocolo AGENTS.md, escaneo profundo del repositorio y generación completa del Memory Bank con 6 archivos core + regla maestra de agente (.agent/rules/00-memory-bank.md).
 ---
+
+## 002 - Implementación Endpoints Kanban (Backend)
+**Fecha:** 2026-01-05 09:42
+**Prompt Original:**
+# Contexto / Rol
+Eres una instancia experta de **Gemini 3** operando como "Agente Arquitecto" en **Google Antigravity**.
+Tu responsabilidad es orquestar el desarrollo de funcionalidades complejas manteniendo la integridad del **"Banco de Memoria" (Memory Bank)** y el registro de actividad.
+
+# Misión: Funcionalidad Kanban (Backend)
+Debemos implementar el backend para una interfaz tipo Kanban. El ejercicio consiste en crear dos endpoints específicos:
+
+1.  **GET `/positions/:id/candidates`**
+    * Objetivo: Listar candidatos en proceso para una `positionID`.
+    * Datos requeridos:
+        * Nombre completo (tabla `candidate`).
+        * `current_interview_step` (tabla `application`).
+        * **Puntuación media**: Calcular el promedio de los `score` de todas las entrevistas (`interview`) asociadas al candidato.
+
+2.  **PUT `/candidates/:id/stage`**
+    * Objetivo: Mover la tarjeta del Kanban.
+    * Acción: Actualizar la fase actual (`current_interview_step`) en la tabla `application` para un candidato específico.
+
+# Instrucciones de Ejecución
+
+## 0. Prerrequisito: Protocolo (AGENTS.md)
+**CRÍTICO: ANTES DE NADA.**
+1.  Lee el archivo `AGENTS.md`.
+2.  Inicializa el protocolo descrito en él.
+
+## 1. Registro de Actividad (Prompts Log)
+Antes de planificar, actualiza el archivo `prompts-log.md` (o créalo si no existe):
+- Registra esta nueva solicitud como "Implementación Endpoints Kanban".
+- Añade la fecha/hora actual y un breve resumen de los requisitos.
+
+## 2. Planificación en Memory Bank
+Analiza el esquema de base de datos actual y el código existente. Luego, **ACTUALIZA** los siguientes archivos (no los sobrescribas, edítalos):
+
+* **`memory-bank/projectbrief.md`**: Añade este ejercicio a los objetivos actuales.
+* **`memory-bank/systemPatterns.md`**: Define la firma de los nuevos endpoints y la lógica de datos necesaria (especialmente el cálculo del promedio de scores).
+* **`memory-bank/progress.md`**: Crea una nueva sección "Kanban Backend". Desglosa el trabajo en pasos atómicos y verificables.
+    * *Ejemplo:* "Query SQL promedio scores", "Endpoint GET", "Endpoint PUT", "Validaciones", "Tests de integración".
+* **`memory-bank/activeContext.md`**:
+    * Actualiza el foco actual: "Planificación Endpoints Kanban".
+    * Define el primer paso técnico a realizar.
+
+# Salida Esperada
+1.  Confirmación de lectura de `AGENTS.md`.
+2.  Muestra el contenido que has añadido a `prompts-log.md`.
+3.  **Preséntame el Plan Granular (Roadmap)** que has diseñado en `progress.md`.
+
+**IMPORTANTE:** No escribas el código de los controladores todavía. Espera a que apruebe el plan.
+
+**Resumen de la Respuesta/Acción:**
+Análisis del schema Prisma, actualización del Memory Bank con planificación detallada de endpoints Kanban (GET /positions/:id/candidates con cálculo de score promedio, PUT /candidates/:id/stage), y presentación del roadmap granular para aprobación.
+---

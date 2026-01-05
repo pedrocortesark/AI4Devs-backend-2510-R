@@ -1,18 +1,19 @@
 # Active Context - Estado Actual del Desarrollo
 
 > **🚨 SEMÁFORO DE DESARROLLO**: Este archivo refleja el estado EN VIVO del proyecto.  
-> **Última actualización:** 2026-01-05 09:00 CET
+> **Última actualización:** 2026-01-05 09:42 CET
 
 ## ¿En qué estamos trabajando AHORA MISMO?
 
 ### 🎯 Tarea Activa
-**Inicialización del Memory Bank y Protocolo Multi-Agente**
+**Planificación de Endpoints Kanban (Backend)**
 
-Se está configurando la estructura de documentación compartida para permitir la colaboración multi-agente sin conflictos. Esto incluye:
-- ✅ Creación de carpeta `memory-bank/` con 6 archivos core
-- ✅ Creación de regla maestra `.agent/rules/00-memory-bank.md`
-- ✅ Registro del prompt inicial en `prompts-log.md`
-- 🔄 Población de contenido basado en escaneo del repositorio
+Se está diseñando la implementación de dos endpoints para gestionar candidatos en un tablero Kanban:
+- 🔄 GET `/positions/:id/candidates` - Listar candidatos con score promedio
+- 🔄 PUT `/candidates/:id/stage` - Mover candidato entre fases
+- ✅ Análisis del schema Prisma completado
+- ✅ Roadmap granular creado en `progress.md`
+- ⏳ Esperando aprobación del plan antes de implementar
 
 ### 🔴 Bloqueos Actuales
 **Ninguno** - El sistema está funcional en modo desarrollo:
@@ -23,7 +24,21 @@ Se está configurando la estructura de documentación compartida para permitir l
 ## Lista de Tareas Inmediatas (Next Steps)
 
 ### Alta Prioridad
-1. [ ] **Completar inicialización de Memory Bank**
+1. [/] **Implementar Endpoints Kanban** (EN PLANIFICACIÓN)
+   - [x] Registrar prompt en prompts-log.md (ID 002)
+   - [x] Analizar schema Prisma (Application-Candidate-Interview)
+   - [x] Crear roadmap granular en progress.md
+   - [x] Actualizar activeContext.md con nuevo foco
+   - [x] **REVISIÓN ARQUITECTÓNICA:** Ajustar plan para usar solo archivos existentes
+   - [x] Corregir progress.md: NO crear ApplicationService/positionRoutes
+   - [x] Corregir systemPatterns.md: Extender candidateService.ts
+   - [ ] **ESPERANDO APROBACIÓN DEL PLAN CORREGIDO**
+   - [ ] Añadir funciones en candidateService.ts
+   - [ ] Añadir rutas en candidateRoutes.ts
+   - [ ] Testing manual
+
+2. [ ] **Completar inicialización de Memory Bank**
+
    - [ ] Crear archivo `progress.md`
    - [ ] Crear archivo `.agent/rules/00-memory-bank.md`
    - [ ] Confirmar que todos los archivos están en su lugar

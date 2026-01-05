@@ -28,6 +28,11 @@
 - **Base de datos relacional** con Prisma ORM
 - **Frontend SPA** con React + TypeScript
 
+### 5. Vista Kanban de Candidatos (NUEVO - 2026-01-05)
+- **Seguimiento visual** del pipeline de candidatos por posición
+- **Cálculo automático** de score promedio basado en entrevistas
+- **Movimiento drag-and-drop** entre fases del proceso (backend listo)
+
 ## Alcance Actual (MVP)
 
 ### ✅ Funcionalidades Implementadas
@@ -40,7 +45,13 @@
 - [x] Frontend React con formularios
 - [x] Sistema de rutas Express
 
-### 🚧 Funcionalidades Pendientes
+### 🚧 Funcionalidades En Desarrollo
+- [/] **Endpoints Kanban** (backend en planificación):
+  - GET `/positions/:id/candidates` - Listar candidatos con score promedio
+  - PUT `/candidates/:id/stage` - Mover candidato entre fases
+
+### 📋 Funcionalidades Pendientes
+
 - [ ] Interfaz completa para Positions
 - [ ] Gestión del ciclo de Applications
 - [ ] Sistema de Interview Scheduling
